@@ -11,6 +11,23 @@ class GameBoard {
 
   CellType defaultValue = CellType.EMPTY;
 
+  GameBoard changeSizeTo(int newSize) {
+    GameBoard newBoard = GameBoard(newSize);
+    newBoard.defaultValue = defaultValue;
+    newBoard.reset();
+    for (int i = 0; i < newSize; i++) {
+      for (int j = 0; j < newSize; j++) {
+        if (i < size && j < size) {
+          newBoard.setValue(i, j, getValue(i, j));
+        } else {
+          newBoard.setValue(i, j, CellType.TRANSPARENT);
+        }
+      }
+    }
+
+    return newBoard;
+  }
+
   static transparent(int size) {
     GameBoard board = GameBoard(size);
     board.defaultValue = CellType.TRANSPARENT;
@@ -195,7 +212,7 @@ class GameBoard {
   bool generateLevel({
     int bombsPercentage = 50,
     int minPathLength = -1,
-    int maxAttempts = 1000,
+    int maxAttempts = 9999,
     int maxBombs = 100,
     int seed = -1,
   }) {

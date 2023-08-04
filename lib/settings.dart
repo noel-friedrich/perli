@@ -109,7 +109,7 @@ class Settings {
       title: "Field-Size",
       sectionTitle: "Zen-Mode",
       description:
-          "The size of the field. The bigger, the more difficult the game.",
+          "The size of the field. The larger, the more difficult the game.",
       icon: Icons.crop,
       options: <int>[4, 5, 6, 7, 8],
     ),
@@ -121,7 +121,7 @@ class Settings {
       title: "View-Time",
       sectionTitle: "Zen-Mode",
       description:
-          "The seconds you have to memorize the field. The bigger, the more difficult the game.",
+          "The seconds you have to memorize the field. The smaller, the more difficult the game.",
       icon: Icons.timer,
       options: <int>[1, 2, 3, 4, 5],
     ),

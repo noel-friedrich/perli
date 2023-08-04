@@ -35,7 +35,6 @@ class _ZenWidgetState extends State<ZenWidget> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: ListView(
-        physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
           Card(
             color: Theme.of(context).colorScheme.primary,

@@ -138,7 +138,6 @@ class _LevelsWidgetState extends State<LevelsWidget> {
     } else {
       return ListView(
         padding: const EdgeInsets.all(20.0),
-        physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
           const SizedBox(height: 10),
           Text(

@@ -180,7 +180,6 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
 
     if (challengeRunning) {
       return ListView(
-        physics: const NeverScrollableScrollPhysics(),
         padding: const EdgeInsets.all(20.0),
         children: <Widget>[
           Row(

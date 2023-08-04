@@ -48,23 +48,20 @@ class _GameWidgetState extends State<GameWidget> {
       newGameBoard = makeNewGameBoardDefault();
     }
 
-    if (newGameBoard.size == oldGameBoard.size) {
-      GameBoardAnimator animator =
-          GameBoardAnimator(oldGameBoard, newGameBoard);
-      if (isInitialGeneration) {
-        animator.interpolationOffset = 0;
-        animator.animationTotalMs = 300;
-      }
+    GameBoardAnimator animator = GameBoardAnimator(oldGameBoard, newGameBoard);
+    if (isInitialGeneration) {
+      animator.interpolationOffset = 0;
+      animator.animationTotalMs = 300;
+    }
 
-      while (!animator.isDone()) {
-        setState(() {
-          gameBoard = animator.getFrame();
-        });
-        animator.nextFrame();
-        await Future.delayed(Duration(milliseconds: animator.waitMs()));
-        if (!mounted) {
-          return;
-        }
+    while (!animator.isDone()) {
+      setState(() {
+        gameBoard = animator.getFrame();
+      });
+      animator.nextFrame();
+      await Future.delayed(Duration(milliseconds: animator.waitMs()));
+      if (!mounted) {
+        return;
       }
     }
 
@@ -220,9 +217,12 @@ class GameCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 100),
-      color: valueToColor(context),
+    return GestureDetector(
+      onVerticalDragUpdate: (_) {},
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 100),
+        color: valueToColor(context),
+      ),
     );
   }
 }

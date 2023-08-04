@@ -11,7 +11,7 @@ class GameBoardAnimator {
 
   GameBoardAnimator(this.a, this.b, {this.interpolationOffset = 3}) {
     if (a.size != b.size) {
-      a = GameBoard.transparent(b.size);
+      a = a.changeSizeTo(b.size);
     }
     interpolationOffset = a.size - 1;
   }
