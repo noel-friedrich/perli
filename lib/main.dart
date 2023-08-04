@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'colors.dart';
 
@@ -37,6 +38,12 @@ class PerliApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Force portrait mode
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
+
     return MaterialApp(
       title: 'Perli',
       theme: ThemeData(
