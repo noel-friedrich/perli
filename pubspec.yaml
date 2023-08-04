@@ -1,0 +1,54 @@
+name: perli
+description: A relaxing memorization game.
+publish_to: 'none'
+version: 1.0.2
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+  settings_ui: ^2.0.2
+  shared_preferences: ^2.2.0
+  flutter_launcher_icons: ^0.13.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
+  
+  assets:
+    - assets/images/
+    - assets/gif/
+  
+  fonts:
+  - family: Lora
+    fonts:
+      - asset: assets/fonts/Lora-Regular.ttf
+      - asset: assets/fonts/Lora-Bold.ttf
+        weight: 700
+      - asset: assets/fonts/Lora-Italic.ttf
+        style: italic
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/images/logo.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/logo.png"
