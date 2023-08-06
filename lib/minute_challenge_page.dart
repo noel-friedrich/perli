@@ -1,5 +1,5 @@
+import 'package:perli/audiomanager.dart';
 import 'package:perli/gameboard.dart';
-import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -8,19 +8,25 @@ import 'game_widget.dart';
 import 'settings.dart';
 
 class MinuteChallengePage extends StatelessWidget {
-  const MinuteChallengePage({Key? key}) : super(key: key);
+  final AudioManager audioManager;
+
+  const MinuteChallengePage({Key? key, required this.audioManager})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("One Minute Challenge")),
-      body: const MinuteChallengeWidget(),
+      body: MinuteChallengeWidget(audioManager: audioManager),
     );
   }
 }
 
 class MinuteChallengeWidget extends StatefulWidget {
-  const MinuteChallengeWidget({Key? key}) : super(key: key);
+  final AudioManager audioManager;
+
+  const MinuteChallengeWidget({Key? key, required this.audioManager})
+      : super(key: key);
 
   @override
   _MinuteChallengeWidgetState createState() => _MinuteChallengeWidgetState();
@@ -38,6 +44,9 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
   int? lastLevelCompletedTime;
   bool challengeCompleted = false;
 
+  AudioManager audioManager = AudioManager();
+  bool audioHasLoaded = false;
+
   void startChallenge() {
     challengeRunning = true;
     progressController = AnimationController(
@@ -48,6 +57,7 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
       });
     progressController!.forward();
     lastLevelCompletedTime = DateTime.now().millisecondsSinceEpoch;
+    audioManager.play(AudioFile.challenge, isMusic: true);
   }
 
   int scoreFromTime(int timeMs) {
@@ -65,7 +75,12 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
       }
 
       setState(() {
-        currTimerSeconds--;
+        if (audioHasLoaded) {
+          if (currTimerSeconds == startTimerSeconds) {
+            audioManager.play(AudioFile.countdown);
+          }
+          currTimerSeconds--;
+        }
       });
     }
     setState(() {
@@ -82,11 +97,21 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
     return 60 - (progressController!.value * 60).toInt();
   }
 
+  Future<void> loadAudio() async {
+    audioManager = widget.audioManager;
+    await Settings.load();
+    await audioManager.loadMultiple([
+      AudioFile.challenge,
+      AudioFile.countdown,
+    ]);
+    audioHasLoaded = true;
+  }
+
   @override
   void initState() {
     super.initState();
     startTimer();
-    Settings.load();
+    loadAudio();
   }
 
   int getCurrBoardBombPercentage() {
@@ -142,13 +167,15 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                currTimerSeconds.toString(),
-                style: const TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
+              if (audioHasLoaded)
+                Text(
+                  currTimerSeconds.toString(),
+                  style: const TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
+              if (!audioHasLoaded) const CircularProgressIndicator(),
               const SizedBox(height: 20),
               Card(
                 color: Theme.of(context).colorScheme.primary,
@@ -206,6 +233,7 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
           ),
           const SizedBox(height: 20),
           GameWidget(
+            audioManager: audioManager,
             size: 6,
             viewSeconds: 1,
             makeGameBoard: (int size) {
@@ -304,6 +332,7 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
 
   @override
   void dispose() {
+    audioManager.stopAll();
     progressController?.dispose();
     super.dispose();
   }

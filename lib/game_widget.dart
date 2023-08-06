@@ -4,10 +4,14 @@ import 'colors.dart';
 import 'gameconstants.dart';
 import 'gameboard.dart';
 import 'gameboardanimator.dart';
+import 'settings.dart';
+import 'audiomanager.dart';
+import 'package:vibration/vibration.dart';
 
 class GameWidget extends StatefulWidget {
   final int size;
   final int viewSeconds;
+  final AudioManager audioManager;
   final Function? onLevelComplete;
   final Function? onLevelFailed;
   final Function? makeGameBoard;
@@ -15,6 +19,7 @@ class GameWidget extends StatefulWidget {
   const GameWidget({
     Key? key,
     required this.size,
+    required this.audioManager,
     this.viewSeconds = 2,
     this.onLevelComplete,
     this.onLevelFailed,
@@ -28,6 +33,9 @@ class GameWidget extends StatefulWidget {
 class _GameWidgetState extends State<GameWidget> {
   final GlobalKey key = GlobalKey();
   GameBoard gameBoard = GameBoard.transparent(5);
+  AudioManager audioManager = AudioManager();
+  bool failed = false;
+  bool completed = false;
 
   GameBoard makeNewGameBoardDefault() {
     GameBoard gameBoard = GameBoard(widget.size);
@@ -36,6 +44,9 @@ class _GameWidgetState extends State<GameWidget> {
   }
 
   Future<void> startNewLevel(bool isInitialGeneration) async {
+    failed = false;
+    completed = false;
+
     if (!mounted) {
       return;
     }
@@ -79,11 +90,23 @@ class _GameWidgetState extends State<GameWidget> {
     });
   }
 
+  Future<void> loadAudio() async {
+    audioManager = widget.audioManager;
+
+    List<String> allFiles = [];
+    allFiles.addAll(AudioFile.wins);
+    allFiles.add(AudioFile.fail);
+
+    await audioManager.loadMultiple(allFiles);
+  }
+
   @override
   void initState() {
     super.initState();
     gameBoard = GameBoard.transparent(widget.size);
     startNewLevel(true);
+
+    loadAudio();
   }
 
   void onPointerUpdate(PointerEvent event) {
@@ -105,22 +128,39 @@ class _GameWidgetState extends State<GameWidget> {
     }
   }
 
+  Future<void> vibrate() async {
+    bool? hasVibrator = await Vibration.hasVibrator();
+    if (hasVibrator == true) {
+      Vibration.vibrate(duration: 100);
+    }
+  }
+
   void onCellTap(int x, int y) {
     if (gameBoard.phase != GamePhase.DRAWING_PATH) {
       return;
     }
 
     CellType value = gameBoard.getValue(x, y);
-    if (value == CellType.BOMB) {
+    if (value == CellType.BOMB && !failed) {
+      audioManager.play(AudioFile.fail);
+
+      if (Settings.getSetting("vibration_on_fail").booleanValue) {
+        vibrate();
+      }
+
       setState(() {
         gameBoard.phase = GamePhase.LEVEL_FAILED;
       });
+
       if (widget.onLevelFailed != null) {
         widget.onLevelFailed!();
       }
+
       Future.delayed(const Duration(seconds: 2), () {
         startNewLevel(false);
       });
+
+      failed = true;
       return;
     }
 
@@ -143,14 +183,16 @@ class _GameWidgetState extends State<GameWidget> {
         }
       }
 
-      if (gameBoard.isCompleted()) {
+      if (gameBoard.isCompleted() && !completed) {
         gameBoard.phase = GamePhase.LEVEL_COMPLETE;
+        audioManager.playRandom(AudioFile.wins);
         if (widget.onLevelComplete != null) {
           widget.onLevelComplete!();
         }
         Future.delayed(const Duration(seconds: 1), () {
           startNewLevel(false);
         });
+        completed = true;
       }
     });
   }
@@ -218,6 +260,8 @@ class GameCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      // prevent scrolling
+      onHorizontalDragUpdate: (_) {},
       onVerticalDragUpdate: (_) {},
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),

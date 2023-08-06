@@ -7,6 +7,7 @@ import 'home_widget.dart';
 import 'zen_widget.dart';
 import 'levels_widget.dart';
 import 'settings_page.dart';
+import 'audiomanager.dart';
 
 Future<void> main() async {
   runApp(const PerliApp());
@@ -86,10 +87,21 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  AudioManager audioManager = AudioManager();
+
+  Future<void> initAudio() async {
+    List<String> allFiles = [];
+    allFiles.addAll(AudioFile.buttons);
+    allFiles.addAll(AudioFile.wins);
+    allFiles.add(AudioFile.fail);
+
+    await audioManager.loadMultiple(allFiles);
+  }
 
   @override
   void initState() {
     super.initState();
+    initAudio();
   }
 
   void _onItemTapped(int index) {
@@ -101,11 +113,11 @@ class _MainPageState extends State<MainPage> {
   Widget getBody() {
     switch (_selectedIndex) {
       case 0:
-        return HomeWidget(key: UniqueKey());
+        return HomeWidget(key: UniqueKey(), audioManager: audioManager);
       case 1:
-        return ZenWidget(key: UniqueKey());
+        return ZenWidget(key: UniqueKey(), audioManager: audioManager);
       case 2:
-        return LevelsWidget(key: UniqueKey());
+        return LevelsWidget(key: UniqueKey(), audioManager: audioManager);
       default:
         return const Text(
             'Something went wrong! It would be great if you could report this to the developers.');
@@ -132,6 +144,7 @@ class _MainPageState extends State<MainPage> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
+              audioManager.stopAll();
               Navigator.push(
                 context,
                 MaterialPageRoute<void>(
@@ -171,5 +184,11 @@ class _MainPageState extends State<MainPage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    audioManager.dispose();
+    super.dispose();
   }
 }

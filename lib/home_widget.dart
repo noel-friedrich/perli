@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 
 import 'settings.dart';
+import 'audiomanager.dart';
 import 'minute_challenge_page.dart';
 
 class HomeWidget extends StatefulWidget {
-  const HomeWidget({Key? key}) : super(key: key);
+  final AudioManager audioManager;
+
+  const HomeWidget({Key? key, required this.audioManager}) : super(key: key);
 
   @override
   State createState() => _HomeWidgetState();
@@ -178,11 +181,13 @@ class _HomeWidgetState extends State<HomeWidget> {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () {
+                    widget.audioManager.playRandom(AudioFile.buttons);
                     Navigator.push(
                       context,
                       MaterialPageRoute<void>(
                         builder: (BuildContext context) {
-                          return const MinuteChallengePage();
+                          return MinuteChallengePage(
+                              audioManager: widget.audioManager);
                         },
                       ),
                     );

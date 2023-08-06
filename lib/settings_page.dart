@@ -9,15 +9,24 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<String> sections = Settings.getSectionTitles();
+    sections.remove("Zen-Mode");
     return Scaffold(
       appBar: AppBar(title: const Text("Settings")),
-      body: const SettingsWidget(),
+      body: SettingsWidget(sections: sections),
     );
   }
 }
 
 class SettingsWidget extends StatefulWidget {
-  const SettingsWidget({Key? key}) : super(key: key);
+  final List<String> sections;
+  final ScrollPhysics physics;
+
+  const SettingsWidget({
+    Key? key,
+    required this.sections,
+    this.physics = const AlwaysScrollableScrollPhysics(),
+  }) : super(key: key);
 
   @override
   _SettingsWidgetState createState() => _SettingsWidgetState();
@@ -58,7 +67,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
         return SettingsTile(
           onPressed: (context) {
             setting.onPressed?.call();
-            setting.save().then((value) => initAsync());
+            Settings.save().then((value) => initAsync());
           },
           leading: Icon(setting.icon),
           title: Text(setting.title),
@@ -72,6 +81,10 @@ class _SettingsWidgetState extends State<SettingsWidget> {
     await Settings.load();
     List<String> sectionTitles = Settings.getSectionTitles();
     for (String sectionTitle in sectionTitles) {
+      if (!widget.sections.contains(sectionTitle)) {
+        continue;
+      }
+
       List<Setting> settings = Settings.getSettingsForSection(sectionTitle);
       if (settings.isEmpty) {
         // true when all settings in section are invisible
@@ -87,7 +100,9 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           ),
           tiles: tiles));
     }
-    setState(() {});
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   @override
@@ -99,6 +114,8 @@ class _SettingsWidgetState extends State<SettingsWidget> {
   @override
   Widget build(BuildContext context) {
     return SettingsList(
+      shrinkWrap: true,
+      physics: widget.physics,
       sections: sections,
       lightTheme: const SettingsThemeData(
         settingsListBackground: Colors.white,

@@ -41,7 +41,7 @@ class LevelManager {
   static int viewSecondsFromDifficulty(LevelDifficulty difficulty) {
     switch (difficulty) {
       case LevelDifficulty.EASY:
-        return 3;
+        return 2;
       case LevelDifficulty.MEDIUM:
         return 2;
       case LevelDifficulty.HARD:
@@ -49,7 +49,7 @@ class LevelManager {
     }
   }
 
-  static int numLevelsPerDifficulty = 333;
+  static int numLevelsPerDifficulty = 33;
 
   static int numTotalLevels() {
     return numLevelsPerDifficulty * LevelDifficulty.values.length;
@@ -66,6 +66,39 @@ class LevelManager {
     int percentageRange = maxPercentage - minPercentage;
     return minPercentage +
         (remainder * percentageRange) ~/ numLevelsPerDifficulty;
+  }
+
+  static int stagesFromDifficulty(LevelDifficulty difficulty) {
+    switch (difficulty) {
+      case LevelDifficulty.EASY:
+        return 8;
+      case LevelDifficulty.MEDIUM:
+        return 12;
+      case LevelDifficulty.HARD:
+        return 15;
+    }
+  }
+
+  static int secondsPerStageFromDifficulty(LevelDifficulty difficulty) {
+    switch (difficulty) {
+      case LevelDifficulty.EASY:
+        return 4;
+      case LevelDifficulty.MEDIUM:
+        return 6;
+      case LevelDifficulty.HARD:
+        return 4;
+    }
+  }
+
+  static int startSecondsFromDifficulty(LevelDifficulty difficulty) {
+    switch (difficulty) {
+      case LevelDifficulty.EASY:
+        return 20;
+      case LevelDifficulty.MEDIUM:
+        return 10;
+      case LevelDifficulty.HARD:
+        return 10;
+    }
   }
 
   static int sizeFromDifficulty(LevelDifficulty difficulty) {

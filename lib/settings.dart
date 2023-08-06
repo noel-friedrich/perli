@@ -103,6 +103,30 @@ class Setting {
 class Settings {
   static final List<Setting> _settings = <Setting>[
     Setting(
+      key: "sounds_volume",
+      defaultValue: 100,
+      type: SettingType.integer,
+      title: "Soundeffects",
+      sectionTitle: "Audio & Vibration",
+      description:
+          "Volume of Soundeffects when playing the game (in percent). Set to 0 to disable soundeffects.",
+      icon: Icons.speaker_outlined,
+      options: <int>[0, 25, 50, 75, 100],
+    ),
+
+    Setting(
+      key: "music_volume",
+      defaultValue: 50,
+      type: SettingType.integer,
+      title: "Music Volume",
+      sectionTitle: "Audio & Vibration",
+      description:
+          "Music volume when playing the game (in percent). Set to 0 to disable music.",
+      icon: Icons.music_note_outlined,
+      options: <int>[0, 25, 50, 75, 100],
+    ),
+
+    Setting(
       key: "zen_mode_size",
       defaultValue: 5,
       type: SettingType.integer,
@@ -122,7 +146,7 @@ class Settings {
       sectionTitle: "Zen-Mode",
       description:
           "The seconds you have to memorize the field. The smaller, the more difficult the game.",
-      icon: Icons.timer,
+      icon: Icons.timer_outlined,
       options: <int>[1, 2, 3, 4, 5],
     ),
 
@@ -139,17 +163,38 @@ class Settings {
     ),
 
     Setting(
+      key: "vibration_on_fail",
+      defaultValue: true,
+      type: SettingType.boolean,
+      title: "Vibrate on Fail",
+      sectionTitle: "Audio & Vibration",
+      description: "Toggle wether to vibrate when you fail a game.",
+      icon: Icons.vibration_outlined,
+    ),
+
+    Setting(
       key: "reset",
       defaultValue: null,
       type: SettingType.button,
       title: "Reset all data",
       sectionTitle: "Miscellaneous",
-      description:
-          "Reset all settings and data to their default values. This action cannot be undone. This includes all completed levels and scores.",
+      description: "Reset all settings to their default value.",
       icon: Icons.restore_rounded,
-      onPressed: () async {
-        await reset();
+      onPressed: () {
+        reset();
       },
+    ),
+
+    Setting(
+      key: "thanks_mattis",
+      defaultValue: null,
+      type: SettingType.button,
+      title: "Music Credit",
+      sectionTitle: "Miscellaneous",
+      description:
+          "All sound tracks and effects were created by Mattis Strickert. Thanks for that, you did an awesome job!",
+      icon: Icons.info_outline,
+      onPressed: () async {},
     ),
 
     // invisible settings
@@ -218,9 +263,10 @@ class Settings {
     }
   }
 
-  static Future<void> reset() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    await load();
+  static void reset() {
+    for (Setting setting in _settings) {
+      if (!setting.visible) continue;
+      setting.setValue(setting.defaultValue);
+    }
   }
 }
