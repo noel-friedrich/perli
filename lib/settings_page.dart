@@ -25,7 +25,7 @@ class SettingsWidget extends StatefulWidget {
   const SettingsWidget({
     Key? key,
     required this.sections,
-    this.physics = const AlwaysScrollableScrollPhysics(),
+    this.physics = const BouncingScrollPhysics(),
   }) : super(key: key);
 
   @override

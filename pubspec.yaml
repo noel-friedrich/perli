@@ -1,7 +1,7 @@
 name: perli
 description: A relaxing memorization game.
 publish_to: 'none'
-version: 1.1.0
+version: 1.1.1
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
@@ -27,6 +27,7 @@ flutter:
   
   assets:
     - assets/images/
+    - assets/images/skins/
     - assets/gif/
     - assets/sounds/
     - assets/sounds/Win/

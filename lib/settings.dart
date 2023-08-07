@@ -106,10 +106,10 @@ class Settings {
       key: "sounds_volume",
       defaultValue: 100,
       type: SettingType.integer,
-      title: "Soundeffects",
+      title: "Soundeffect Volume",
       sectionTitle: "Audio & Vibration",
       description:
-          "Volume of Soundeffects when playing the game (in percent). Set to 0 to disable soundeffects.",
+          "Volume of soundeffects (in percent). Set to 0 to disable soundeffects.",
       icon: Icons.speaker_outlined,
       options: <int>[0, 25, 50, 75, 100],
     ),
@@ -120,8 +120,7 @@ class Settings {
       type: SettingType.integer,
       title: "Music Volume",
       sectionTitle: "Audio & Vibration",
-      description:
-          "Music volume when playing the game (in percent). Set to 0 to disable music.",
+      description: "Volume of music (in percent). Set to 0 to disable music.",
       icon: Icons.music_note_outlined,
       options: <int>[0, 25, 50, 75, 100],
     ),
@@ -176,12 +175,27 @@ class Settings {
       key: "reset",
       defaultValue: null,
       type: SettingType.button,
-      title: "Reset all data",
+      title: "Reset Settings",
       sectionTitle: "Miscellaneous",
       description: "Reset all settings to their default value.",
       icon: Icons.restore_rounded,
       onPressed: () {
         reset();
+      },
+    ),
+
+    Setting(
+      key: "fullreset",
+      defaultValue: null,
+      type: SettingType.button,
+      title: "Reset all data",
+      sectionTitle: "Miscellaneous",
+      description:
+          "Reset all data that is stored. This includes scores, levels and shop-items.",
+      icon: Icons.delete_forever_outlined,
+      visible: false,
+      onPressed: () {
+        fullReset();
       },
     ),
 
@@ -214,7 +228,14 @@ class Settings {
         key: "1_minute_challenge_highscore",
         defaultValue: -1,
         type: SettingType.integer,
-        visible: false)
+        visible: false),
+
+    Setting(
+      key: "coins",
+      defaultValue: 0,
+      type: SettingType.integer,
+      visible: false,
+    )
   ];
 
   static List<Setting> get settings => _settings;
@@ -267,6 +288,14 @@ class Settings {
     for (Setting setting in _settings) {
       if (!setting.visible) continue;
       setting.setValue(setting.defaultValue);
+      setting.save();
+    }
+  }
+
+  static Future<void> fullReset() async {
+    for (Setting setting in _settings) {
+      setting.setValue(setting.defaultValue);
+      setting.save();
     }
   }
 }

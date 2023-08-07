@@ -42,6 +42,7 @@ class _HomeWidgetState extends State<HomeWidget> {
   @override
   Widget build(BuildContext context) {
     return ListView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       children: <Widget>[
         Card(

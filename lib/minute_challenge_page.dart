@@ -6,6 +6,7 @@ import 'dart:math';
 import 'colors.dart';
 import 'game_widget.dart';
 import 'settings.dart';
+import 'shop.dart';
 
 class MinuteChallengePage extends StatelessWidget {
   final AudioManager audioManager;
@@ -99,6 +100,7 @@ class _MinuteChallengeWidgetState extends State<MinuteChallengeWidget>
 
   Future<void> loadAudio() async {
     audioManager = widget.audioManager;
+    await Shop.load();
     await Settings.load();
     await audioManager.loadMultiple([
       AudioFile.challenge,

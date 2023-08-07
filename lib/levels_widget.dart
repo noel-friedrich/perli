@@ -4,6 +4,7 @@ import 'package:perli/gameboard.dart';
 
 import 'levelmanager.dart';
 import 'colors.dart';
+import 'shop.dart';
 import 'settings.dart';
 import 'audiomanager.dart';
 
@@ -26,6 +27,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
   int dieTimestamp = -1;
   int stageIndex = 0;
   int numStages = 0;
+  bool gainedCoins = false;
 
   ScrollController scrollController = ScrollController();
   AnimationController? progressController;
@@ -71,6 +73,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
     stageIndex = 0;
     levelFinished = false;
     levelFinishedWin = false;
+    gainedCoins = false;
 
     playingLevel = true;
     updateProgressbar();
@@ -91,12 +94,18 @@ class _LevelsWidgetState extends State<LevelsWidget>
       if (levelsCompleted.integerValue < selectedLevel! + 1) {
         levelsCompleted.value = selectedLevel! + 1;
         levelsCompleted.save();
+
+        Setting coins = Settings.getSetting('coins');
+        coins.setValue(coins.integerValue + secondsLeft);
+        coins.save();
+        gainedCoins = true;
       }
     }
   }
 
   Future<void> loadSettings() async {
     await Settings.load();
+    await Shop.load();
     if (!mounted) {
       return;
     }
@@ -105,6 +114,20 @@ class _LevelsWidgetState extends State<LevelsWidget>
 
     int levelIndex = Settings.getSetting('levels_completed').integerValue;
     scrollTo(levelIndex);
+  }
+
+  Future<void> audioLoop() async {
+    await loadSettings();
+    await Future.wait([
+      widget.audioManager.loadMultiple(AudioFile.buttons),
+      widget.audioManager.load(AudioFile.level),
+      Future.delayed(const Duration(seconds: 5))
+    ]);
+
+    if (mounted) {
+      await widget.audioManager
+          .play(AudioFile.level, isMusic: true, loop: true);
+    }
   }
 
   @override
@@ -116,7 +139,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
       initialScrollOffset: 0,
     );
 
-    loadSettings();
+    audioLoop();
   }
 
   void tellUser(String text) {
@@ -147,6 +170,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
 
   Widget buildLevelsView(BuildContext context) {
     return ListView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       controller: scrollController,
       children: [
@@ -186,6 +210,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
                               'You must complete all previous levels to unlock a level.');
                           return;
                         }
+                        widget.audioManager.playRandom(AudioFile.buttons);
                         setState(() {
                           selectedLevel = levelIndex;
                           levelFinished = false;
@@ -259,6 +284,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
           style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.tertiary),
           onPressed: () {
+            widget.audioManager.playRandom(AudioFile.buttons);
             setState(() {
               startLevel();
             });
@@ -278,6 +304,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
           style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.tertiary),
           onPressed: () {
+            widget.audioManager.playRandom(AudioFile.buttons);
             setState(() {
               selectedLevel = null;
             });
@@ -442,6 +469,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
           style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.tertiary),
           onPressed: () {
+            widget.audioManager.playRandom(AudioFile.buttons);
             setState(() {
               startLevel();
             });
@@ -461,6 +489,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
           style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.tertiary),
           onPressed: () {
+            widget.audioManager.playRandom(AudioFile.buttons);
             setState(() {
               selectedLevel = null;
             });
@@ -477,6 +506,11 @@ class _LevelsWidgetState extends State<LevelsWidget>
         ),
       ],
     );
+  }
+
+  String getCoinsReceivedText() {
+    if (!gainedCoins) return "";
+    return "That means that you received $secondsLeftWin coins that you can now spend in the shop!";
   }
 
   Widget buildLevelCompleteSuccess(BuildContext context) {
@@ -510,8 +544,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
             padding: const EdgeInsets.all(16.0),
             child: Text(
               'You made it! In the end, you had $secondsLeftWin '
-              'seconds left. That means that you receive '
-              '$secondsLeftWin coins to spend in the shop.',
+              'seconds left. ${getCoinsReceivedText()}',
               style: const TextStyle(
                 fontSize: 16,
               ),
@@ -524,6 +557,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
             style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.tertiary),
             onPressed: () {
+              widget.audioManager.playRandom(AudioFile.buttons);
               setState(() {
                 levelFinished = false;
                 levelFinishedWin = false;
@@ -546,6 +580,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
           style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.tertiary),
           onPressed: () {
+            widget.audioManager.playRandom(AudioFile.buttons);
             setState(() {
               selectedLevel = null;
             });
@@ -584,6 +619,7 @@ class _LevelsWidgetState extends State<LevelsWidget>
   @override
   void dispose() {
     progressController?.dispose();
+    widget.audioManager.stopAll();
     super.dispose();
   }
 }

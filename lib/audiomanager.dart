@@ -100,6 +100,7 @@ class AudioFile {
   static String countdown = "Countdown.mp3";
   static String fail = "Fail.mp3";
   static String zenExtended = "ZenExt.mp3";
+  static String level = "Level.mp3";
 }
 
 class AudioManager {
@@ -206,6 +207,7 @@ class AudioManager {
   }
 
   void stopAll() {
+    print("stopall");
     for (PerliAudioPlayer player in _audioPlayers.values) {
       player.stop();
     }

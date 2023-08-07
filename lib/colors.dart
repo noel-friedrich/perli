@@ -5,7 +5,7 @@ Color logoYellow = const Color(0xFFFFF137);
 Color logoRed = const Color(0xFFFB3333);
 
 Color lightGrey = const Color(0xFFE5E5E5);
-Color darkGrey = const Color.fromARGB(255, 60, 60, 60);
+Color darkGrey = Color.fromARGB(255, 42, 42, 42);
 Color backgroundColor = const Color(0xFFF5F5F5);
 
 Color white = const Color(0xFFFFFFFF);

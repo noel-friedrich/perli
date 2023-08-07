@@ -82,7 +82,7 @@ class LevelManager {
   static int secondsPerStageFromDifficulty(LevelDifficulty difficulty) {
     switch (difficulty) {
       case LevelDifficulty.EASY:
-        return 4;
+        return 6;
       case LevelDifficulty.MEDIUM:
         return 6;
       case LevelDifficulty.HARD:

@@ -5,6 +5,7 @@ import 'gameconstants.dart';
 import 'gameboard.dart';
 import 'gameboardanimator.dart';
 import 'settings.dart';
+import 'shop.dart';
 import 'audiomanager.dart';
 import 'package:vibration/vibration.dart';
 
@@ -257,16 +258,52 @@ class GameCell extends StatelessWidget {
     }
   }
 
+  String assetPath(ShopItem item) {
+    switch (value) {
+      case CellType.EMPTY:
+        return item.whiteImagePath();
+      case CellType.VISITED:
+        return item.yellowImagePath();
+      case CellType.GOAL:
+        return item.greenImagePath();
+      case CellType.BOMB:
+        return item.redImagePath();
+      default:
+        return "assets/images/logo.png";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      // prevent scrolling
-      onHorizontalDragUpdate: (_) {},
-      onVerticalDragUpdate: (_) {},
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 100),
-        color: valueToColor(context),
-      ),
-    );
+    ShopItem? selectedItem = Shop.getActive(ShopItemType.skin);
+
+    if (value != CellType.TRANSPARENT && selectedItem != null) {
+      return GestureDetector(
+        // prevent scrolling
+        onHorizontalDragUpdate: (_) {},
+        onVerticalDragUpdate: (_) {},
+        child: AnimatedContainer(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(assetPath(selectedItem)),
+              fit: BoxFit.cover,
+            ),
+          ),
+          curve: Curves.ease,
+          duration: const Duration(milliseconds: 500),
+        ),
+      );
+    } else {
+      return GestureDetector(
+        // prevent scrolling
+        onHorizontalDragUpdate: (_) {},
+        onVerticalDragUpdate: (_) {},
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.ease,
+          color: valueToColor(context),
+        ),
+      );
+    }
   }
 }

@@ -4,6 +4,7 @@ import 'package:perli/game_widget.dart';
 
 import 'settings_page.dart';
 import 'settings.dart';
+import 'shop.dart';
 import 'gameboard.dart';
 
 class ZenWidget extends StatefulWidget {
@@ -21,6 +22,7 @@ class _ZenWidgetState extends State<ZenWidget> {
   AudioManager audioManager = AudioManager();
 
   Future<void> loadSettings() async {
+    await Shop.load();
     await Settings.load();
     if (!mounted) {
       return;
@@ -108,7 +110,8 @@ class _ZenWidgetState extends State<ZenWidget> {
           const SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).colorScheme.primary),
+              backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            ),
             onPressed: () {
               setState(() {
                 stopPlaying();
@@ -129,30 +132,13 @@ class _ZenWidgetState extends State<ZenWidget> {
     }
 
     return ListView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20.0),
       shrinkWrap: true,
       children: <Widget>[
         const SettingsWidget(
           sections: ["Zen-Mode"],
           physics: NeverScrollableScrollPhysics(),
-        ),
-        const SizedBox(height: 10),
-        Card(
-          color: Theme.of(context).colorScheme.primary,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: const <Widget>[
-                Text(
-                  'Zen-Mode is a relaxing mode where you can play at your own pace. '
-                  'You may customize it in the settings. Have fun!',
-                  style: TextStyle(
-                    fontSize: 16,
-                  ),
-                ),
-              ],
-            ),
-          ),
         ),
         const SizedBox(height: 10),
         ElevatedButton(
@@ -170,6 +156,24 @@ class _ZenWidgetState extends State<ZenWidget> {
               style: TextStyle(
                 fontSize: 20,
               ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
+        Card(
+          color: Theme.of(context).colorScheme.primary,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: const <Widget>[
+                Text(
+                  'Zen-Mode is a relaxing mode where you can play at your own pace. '
+                  'You may customize it in the settings. Have fun!',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

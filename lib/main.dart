@@ -6,6 +6,7 @@ import 'colors.dart';
 import 'home_widget.dart';
 import 'zen_widget.dart';
 import 'levels_widget.dart';
+import 'shop_widget.dart';
 import 'settings_page.dart';
 import 'audiomanager.dart';
 
@@ -51,11 +52,13 @@ class PerliApp extends StatelessWidget {
         brightness: Brightness.light,
         primarySwatch: colorToMaterialColor(white),
         colorScheme: ColorScheme.light(
-            primary: white,
-            secondary: logoGreen,
-            background: backgroundColor,
-            tertiary: lightGrey,
-            onPrimary: black),
+          primary: white,
+          secondary: logoGreen,
+          background: backgroundColor,
+          tertiary: lightGrey,
+          onPrimary: black,
+          primaryContainer: white,
+        ),
         fontFamily: 'Lora',
       ),
       darkTheme: ThemeData(
@@ -67,6 +70,7 @@ class PerliApp extends StatelessWidget {
           background: black,
           tertiary: darkGrey,
           onPrimary: white,
+          primaryContainer: darkGrey,
         ),
         fontFamily: 'Lora',
       ),
@@ -118,6 +122,8 @@ class _MainPageState extends State<MainPage> {
         return ZenWidget(key: UniqueKey(), audioManager: audioManager);
       case 2:
         return LevelsWidget(key: UniqueKey(), audioManager: audioManager);
+      case 3:
+        return ShopWidget(key: UniqueKey(), audioManager: audioManager);
       default:
         return const Text(
             'Something went wrong! It would be great if you could report this to the developers.');
@@ -177,6 +183,10 @@ class _MainPageState extends State<MainPage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.videogame_asset),
             label: 'Levels',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart_outlined),
+            label: 'Shop',
           ),
         ],
         currentIndex: _selectedIndex,
